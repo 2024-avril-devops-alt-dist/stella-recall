@@ -1,0 +1,40 @@
+services:
+  app:
+    build:
+      context: .
+      args:
+        NODE_ENV: development
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+      - "5555:5555"
+    env_file:
+      - .env 
+    depends_on:
+      - mongo
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+    restart: always
+    command: npm run dev
+
+  mongo:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - mongo-data:/data/db
+      
+volumes:
+  mongo-data:
+
+
+
