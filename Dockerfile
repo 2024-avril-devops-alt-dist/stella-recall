@@ -3,7 +3,7 @@ FROM node:20 AS builder
 WORKDIR /app
 
 # Copy package files and install dependencies
-COPY package*.json ./
+COPY package*.json package-lock.json ./
 RUN npm config set fetch-retry-maxtimeout 60000 && \
     npm install -g npm@latest && \
     npm ci
