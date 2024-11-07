@@ -8,7 +8,7 @@ services:
       - "${PORT:-3000}:${PORT:-3000}"
       - "5555:5555"
     env_file:
-      - .env 
+      - .env.development
     depends_on:
       - mongo
     volumes:
@@ -24,7 +24,8 @@ services:
     ports:
       - "27017:27017"
     environment:
-      - DATABASE_URL=${DATABASE_URL}
+      - MONGO_INITDB_ROOT_USERNAME=${DATABASE_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${DATABASE_PASSWORD}
     healthcheck:
       test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
       interval: 30s
@@ -32,7 +33,7 @@ services:
       retries: 3
     volumes:
       - mongo-data:/data/db
-      
+
 volumes:
   mongo-data:
 

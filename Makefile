@@ -1,6 +1,6 @@
 # Default environment variables
-ENV_FILE_DEV = .env
-ENV_FILE_PROD = .env.production
+ENV_FILE_DEV = ./.env.development
+ENV_FILE_PROD = ./.env.production
 COMPOSE_FILE_DEV = docker-compose.dev.yaml
 COMPOSE_FILE_PROD = docker-compose.prod.yaml
 
