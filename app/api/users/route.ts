@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const users = await prisma.user.findMany()
     return NextResponse.json(users)
@@ -26,6 +26,7 @@ export async function POST(request: NextRequest) {
     })
     return NextResponse.json(user, { status: 201 })
   } catch (error) {
+    console.log(error)
     return NextResponse.json(
       { error: 'Error creating user' },
       { status: 500 }

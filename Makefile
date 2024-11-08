@@ -13,7 +13,7 @@ DOCKER_COMPOSE_PROD = docker compose -f $(COMPOSE_FILE_PROD) --env-file $(ENV_FI
 
 # Start the development environment
 dev:
-	$(DOCKER_COMPOSE_DEV) up --build --force-recreate -d
+	$(DOCKER_COMPOSE_DEV) up --build --force-recreate -d && make start-mongo
 
 # Start the production environment
 prod:
@@ -64,6 +64,15 @@ clean-dev:
 # Clean up containers, networks, volumes for production environment
 clean-prod:
 	$(DOCKER_COMPOSE_PROD) down -v --rmi all --remove-orphans
+
+# Run the database initialization script
+start-mongo:
+	@docker start mongo
+	@until docker exec mongo mongosh --eval "db.adminCommand('ping')" &>/dev/null; do \
+		sleep 2; \
+	done
+	@docker exec mongo mongosh --eval "rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: 'mongo:27017' }] })" || \
+		echo "Replica set already initialized."
 
 # Run tests (assumes tests are set up in the container)
 test:
