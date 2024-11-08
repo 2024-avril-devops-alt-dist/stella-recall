@@ -1,0 +1,33 @@
+services:
+  app:
+    image: node:18-alpine
+    container_name: app
+    working_dir: /app
+    volumes:
+      - ./:/app
+    env_file:
+      - .env.production
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV: production
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+      - "5555:5555"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}  
+      - NODE_ENV=production
+
+    restart: always
+    command: ["sh", "-c" ,"npm run build && npm start", "npx prisma studio", "npx prisma generate"]
+    networks:
+      - my-network
+
+volumes:
+  mongo-data:
+    driver: local
+
+networks:
+  my-network:
+    driver: bridge

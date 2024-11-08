@@ -1,8 +1,8 @@
 # Default environment variables
-ENV_FILE_DEV = .env
-ENV_FILE_PROD = .env.production
-COMPOSE_FILE_DEV = docker-compose.dev.yaml
-COMPOSE_FILE_PROD = docker-compose.prod.yaml
+ENV_FILE_DEV = ./.env.development
+ENV_FILE_PROD = ./.env.production
+COMPOSE_FILE_DEV = docker-compose.dev.yml
+COMPOSE_FILE_PROD = docker-compose.prod.yml
 
 # Common docker command template
 DOCKER_COMPOSE_DEV = docker compose -f $(COMPOSE_FILE_DEV) --env-file $(ENV_FILE_DEV)

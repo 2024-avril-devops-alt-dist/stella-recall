@@ -1,33 +1,29 @@
-# Stage 1: Build the app
-FROM node:20 AS builder
+# Utilisation de l'environnement de développement
+FROM node:22-alpine AS development
+
 WORKDIR /app
 
-# Copy package files and install dependencies
-COPY package*.json package-lock.json ./
-RUN npm config set fetch-retry-maxtimeout 60000 && \
-    npm install -g npm@latest && \
-    npm ci
+COPY package.json package-lock.json ./
+RUN npm install
 
-# Copy application code and generate Prisma client
-COPY . . 
-RUN npx prisma generate 
-RUN npm run build  
+COPY . .
 
-# Stage 2: Run the app
-FROM node:20 AS runner
-WORKDIR /app
-
-# Copy necessary files from the builder stage
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/package.json ./
-
-# Set environment variable for production
-ARG APP_ENV=production
-ENV APP_ENV=${APP_ENV} PORT=3000
-
-# Expose the application port
+ENV NODE_ENV=development
 EXPOSE 3000
+CMD ["npm", "run", "dev"]
 
-# Run the Next.js app
+# Utilisation de l'environnement de production
+FROM node:22-alpine AS production
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci --production
+
+COPY . .
+
+ENV NODE_ENV=production
+EXPOSE 3000
 CMD ["npm", "start"]
+
+
