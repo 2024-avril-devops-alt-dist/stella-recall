@@ -1,27 +1,29 @@
-# Stage 1: Build the app
-FROM node:20 AS builder
+# Utilisation de l'environnement de développement
+FROM node:22-alpine AS development
+
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci
+COPY package.json package-lock.json ./
+RUN npm install
 
-COPY . . 
-RUN npx prisma generate 
-RUN npm run build  
-RUN ls -la /app/.next
-RUN ls -la /app/node_modules/@prisma/client
+COPY . .
 
-# Copy environment file (adjust path if needed)
-COPY .env.development .env
+ENV NODE_ENV=development
+EXPOSE 3000
+CMD ["npm", "run", "dev"]
 
-# Stage 2: Run the app
-FROM node:20 AS runner
+# Utilisation de l'environnement de production
+FROM node:22-alpine AS production
+
 WORKDIR /app
 
-COPY --from=builder /app .
+COPY package.json package-lock.json ./
+RUN npm ci --production
 
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV} PORT=3000
+COPY . .
 
+ENV NODE_ENV=production
 EXPOSE 3000
 CMD ["npm", "start"]
+
+
